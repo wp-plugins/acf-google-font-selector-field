@@ -1,0 +1,29 @@
+.acf-google-font-table {
+	width:100%;
+}
+
+.acf-google-font-table td{
+	padding:0 11px;
+	width: 33.33%;
+	vertical-align: top;
+}
+
+.acf-google-font-table tr td:first-child {
+	padding-left:0px;
+}
+
+.acf-google-font-table .label {
+	font-weight: 700;
+	display: block;
+	font-size:11px;
+	margin:0 0 5px 0;
+}
+
+.acf-google-font-table .acfgfs-loading {
+	padding: 4px 11px;
+	position: relative;
+	top:4px;
+	background: #555;
+	color:#fff;
+	font-size:11px;
+}
