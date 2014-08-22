@@ -18,6 +18,7 @@ The plugin allows you to create a Google font selector field with different opti
 = Compatibility =
 
 This ACF field type is compatible with:
+
 * ACF 5
 * ACF 4
 
@@ -34,21 +35,23 @@ This ACF field type is compatible with:
 
 Once installed the list of Google Fonts will be retrieved from a static file included in the plugin. If you would like the list to be pulled from the Google API you will need to define your API key. You can do this in the theme's function file for example.
 
-```define( 'ACFGFS_API_KEY', 'your_google_api_key' );```
+'define( 'ACFGFS_API_KEY', 'your_google_api_key' );'
 
  It's super easy to get an API key, just head on over to the [Google API Console](http://cloud.google.com/console), create a new project and get a browser api key.
 
 
 The `ACFGFS_REFRESH` constant can also be defined, it controls how frequently the plugin checks the Google API for updates. The value is in seconds, 86400 would be a day. The default is set to 3 days.
 
-```define( 'ACFGFS_REFRESH', 259200 );```
+'define( 'ACFGFS_REFRESH', 259200 );'
 
 == Changelog ==
 
 = 1.0 =
+
 * Initial Release.
 
 = 2.0 =
+
 * Complete rewrite, fonts will need to be set up again
 * Font loading is now much better and selectable
 * Dropped ACF 3 support
