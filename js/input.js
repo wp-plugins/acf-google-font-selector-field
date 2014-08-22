@@ -1,50 +1,122 @@
 (function($){
+	
+	
+	function initialize_field( $el ) {
+		
+		//$el.doStuff();
+		
+	}
+	
+	
+	if( typeof acf.add_action !== 'undefined' ) {
+	
+		/*
+		*  ready append (ACF5)
+		*
+		*  These are 2 events which are fired during the page load
+		*  ready = on page load similar to $(document).ready()
+		*  append = on new DOM elements appended via repeater field
+		*
+		*  @type	event
+		*  @date	20/07/13
+		*
+		*  @param	$el (jQuery selection) the jQuery element which contains the ACF fields
+		*  @return	n/a
+		*/
+		
+		acf.add_action('ready append', function( $el ){
+			
+			acf.get_fields({ type : 'google_font_selector'}, $el).each(function(){
+				
+				initialize_field( $(this) );
 
+                jQuery(document).on( 'change', '.acfgfs-font-family select', function(){
+                    var new_font = $(this).val()
+                    var container = $(this).parents('.acf-input:first');
+                    var variants = container.find( '.acfgfs-font-variants .acfgfs-list' );
+                    var subsets = container.find( '.acfgfs-font-subsets .acfgfs-list' );
+                    var data = container.find( '.acfgfs-font-data').val();
 
-	/*
-	*  acf/setup_fields
-	*
-	*  This event is triggered when ACF adds any new elements to the DOM.
-	*
-	*  @type	function
-	*  @since	1.0.0
-	*  @date	01/01/12
-	*
-	*  @param	event		e: an event object. This can be ignored
-	*  @param	Element		postbox: An element which contains the new HTML
-	*
-	*  @return	N/A
-	*/
+                    jQuery.ajax({
+                        url: ajaxurl,
+                        type: 'post',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            container.find( '.acfgfs-loader').show();
+                        },
+                        data: {
+                            action: 'acfgfs_get_font_details',
+                            font_family: new_font,
+                            data: data
+                        },
+                        success: function( response ) {
+                            container.find( '.acfgfs-loader').hide();
+                            variants.html( response.variants );
+                            subsets.html( response.subsets );
+                        }
+                    });
+                });
+				
+			});
+			
+		});
+		
+		
+	} else {
+		
+		
+		/*
+		*  acf/setup_fields (ACF4)
+		*
+		*  This event is triggered when ACF adds any new elements to the DOM. 
+		*
+		*  @type	function
+		*  @since	1.0.0
+		*  @date	01/01/12
+		*
+		*  @param	event		e: an event object. This can be ignored
+		*  @param	Element		postbox: An element which contains the new HTML
+		*
+		*  @return	n/a
+		*/
+		
+		$(document).live('acf/setup_fields', function(e, postbox){
+			
+			$(postbox).find('.field[data-field_type="google_font_selector"]').each(function(){
+				
+				initialize_field( $(this) );
+                jQuery(document).on( 'change', '.acfgfs-font-family select', function(){
+                    var new_font = $(this).val()
+                    var container = $(this).parents('.acfgfs-font-selector:first');
+                    var variants = container.find( '.acfgfs-font-variants .acfgfs-list' );
+                    var subsets = container.find( '.acfgfs-font-subsets .acfgfs-list' );
+                    var data = container.find( '.acfgfs-font-data').val();
+                    jQuery.ajax({
+                        url: ajaxurl,
+                        type: 'post',
+                        dataType: 'json',
+                        beforeSend: function() {
+                            container.find( '.acfgfs-loader').show();
+                        },
+                        data: {
+                            action: 'acfgfs_get_font_details',
+                            font_family: new_font,
+                            data: data
+                        },
+                        success: function( response ) {
+                            container.find( '.acfgfs-loader').hide();
+                            variants.html( response.variants );
+                            subsets.html( response.subsets );
+                        }
+                    });
+                });
+				
+			});
+		
+		});
+	
+	
+	}
 
-	$(document).live('acf/setup_fields', function(e, postbox){
-
-		$(document).on( 'change', '.acfgfs-font-select', function( i, element ) {
-
-			var font = $(this).val();
-			var field_name = $(this).data( 'field_name' );
-
-			$.ajax({
-				url: acfgfs.ajaxurl,
-				type: 'post',
-				dataType: 'json',
-				data: {
-					action: 'acfgfs_get_font_data',
-					font: font,
-					field_name: field_name
-				},
-				beforeSend: function() {
-					$( '.acfgfs-font-variants ul li, .acfgfs-font-charsets ul li' ).remove();
-					$( '.acfgfs-font-variants, .acfgfs-font-charsets' ).addClass( 'loading' );
-					$( '.acfgfs-font-variants .label, .acfgfs-font-charsets .label' ).after( '<span class="acfgfs-loading">'+acfgfs.loading+'</span>' );
-				},
-				success : function( results ) {
-					$( '.acfgfs-loading' ).remove();
-					$( '.acfgfs-font-variants ul' ).prepend( results.variants );
-					$( '.acfgfs-font-charsets ul' ).prepend( results.charsets );
-				},
-			})
-		})
-
-	});
 
 })(jQuery);

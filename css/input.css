@@ -1,29 +1,43 @@
-.acf-google-font-table {
-	width:100%;
+.acfgfs-font-family {
+    float:left;
+    width:48%;
 }
 
-.acf-google-font-table td{
-	padding:0 11px;
-	width: 33.33%;
-	vertical-align: top;
+.acfgfs-font-variants, .acfgfs-font-subsets {
+    float:left;
+    width:20%;
+    margin-left:6%;
 }
 
-.acf-google-font-table tr td:first-child {
-	padding-left:0px;
+.acfgfs-font-selector {
+    overflow:hidden;
 }
 
-.acf-google-font-table .label {
-	font-weight: 700;
-	display: block;
-	font-size:11px;
-	margin:0 0 5px 0;
+.acfgfs-form-control-title {
+    font-size:11px;
+    text-transform: uppercase;
+    display:block;
+    margin: 0 0 5px 0
 }
 
-.acf-google-font-table .acfgfs-loading {
-	padding: 4px 11px;
-	position: relative;
-	top:4px;
-	background: #555;
-	color:#fff;
-	font-size:11px;
+.acfgfs-font-selector .acfgfs-list input[type="checkbox"] {
+    position: relative;
+    top:2px;
+}
+
+.acfgfs-font-selector {
+    position: relative;
+}
+
+.acfgfs-font-data {
+    display:none;
+}
+
+.acfgfs-loader {
+    height:100%;
+    width:100%;
+    position: absolute;
+    background:rgba(255,255,255,0.9) url('../images/loader.gif') no-repeat 50% 50%;
+    z-index:5000;
+    display:none;
 }

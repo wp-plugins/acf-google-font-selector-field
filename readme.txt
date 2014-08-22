@@ -1,8 +1,8 @@
 === Advanced Custom Fields: Google Font Selector Field ===
 Contributors: danielpataki
 Tags: acf, fonts, google
-Requires at least: 3.4
-Tested up to: 3.9
+Requires at least: 3.5
+Tested up to: 3.9.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -15,33 +15,41 @@ The plugin allows you to create a Google font selector field with different opti
 
 = Compatibility =
 
-This add-on will work with:
-
-* version 4 and up
-* version 3 and bellow
+This ACF field type is compatible with:
+* ACF 5
+* ACF 4
 
 == Installation ==
 
-This add-on can be treated as both a WP plugin and a theme include.
+1. Copy the `acf-google_font_selector` folder into your `wp-content/plugins` folder
+2. Activate the Google Font Selector plugin via the plugins admin page
+3. Create a new field via ACF and select the Google Font Selector type
+4. Please refer to the description for more info regarding the field type settings
 
-= Plugin =
-1. Copy the 'acf-google_font_selector' folder into your plugins folder
-2. Activate the plugin via the Plugins admin page
+== Usage ==
 
-= Include =
-1.	Copy the 'acf-google_font_selector' folder into your theme folder (can use sub folders). You can place the folder anywhere inside the 'wp-content' directory
-2.	Edit your functions.php file and add the code below (Make sure the path is correct to include the acf-google_font_selector.php file)
+Once installed the list of Google Fonts will be retrieved from a static file included in the plugin. If you would like the list to be pulled from the Google API you will need to define your API key. You can do this in the theme's function file for example.
 
-`
-add_action('acf/register_fields', 'my_register_fields');
+```php
+define( 'ACFGFS_API_KEY', 'your_google_api_key' );
+```
 
-function my_register_fields()
-{
-	include_once('acf-google_font_selector/acf-google_font_selector.php');
-}
-`
+ It's super easy to get an API key, just head on over to the [Google API Console](http://cloud.google.com/console), create a new project and get a browser api key.
+
+
+The `ACFGFS_REFRESH` constant can also be defined, it controls how frequently the plugin checks the Google API for updates. The value is in seconds, 86400 would be a day. The default is set to 3 days.
+
+```php
+define( 'ACFGFS_REFRESH', 259200 );
+```
 
 == Changelog ==
 
 = 1.0 =
 * Initial Release.
+
+= 2.0 =
+* Complete rewrite, fonts will need to be set up again
+* Font loading is now much better and selectable
+* Dropped ACF 3 support
+* Added ACF 5 support
