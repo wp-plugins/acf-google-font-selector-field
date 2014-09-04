@@ -113,6 +113,9 @@ class Bonsai_WP_Google_Fonts {
 
 	function set_data() {
 		$this->data = get_option( $this->option_name );
+		if( empty( $this->data ) ) {
+			$this->data = array( 'generated' => 0, 'fonts' => array() );
+		}
 	}
 
 	function save_data() {
@@ -127,7 +130,7 @@ class Bonsai_WP_Google_Fonts {
 
 		return $options;
 	}
-	
+
 	function get_font_variant_array( $font ) {
 		$variants = $this->data['fonts'][$font]['variants'];
 		return $variants;
