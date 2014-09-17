@@ -113,7 +113,7 @@ class Bonsai_WP_Google_Fonts {
 
 	function set_data() {
 		$this->data = get_option( $this->option_name );
-		if( empty( $this->data ) ) {
+		if( empty( $this->data ) || empty( $this->data['generated'] ) ) {
 			$this->data = array( 'generated' => 0, 'fonts' => array() );
 		}
 	}
