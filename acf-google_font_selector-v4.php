@@ -1,7 +1,7 @@
 <?php
 
 class acf_field_google_font_selector extends acf_field {
-	
+
 	// vars
 	var $settings, // will hold info such as dir / path
 		$defaults; // will hold default field options
@@ -49,9 +49,11 @@ class acf_field_google_font_selector extends acf_field {
 
 		add_action( 'wp_enqueue_scripts', array( $this, 'google_font_enqueue' ) );
 
+		add_filter( 'option_' . $this->enqueue_fonts_option, array( $this, 'validate_fields' ) );
+
+		add_action( 'transition_post_status', array( $this, 'sync_fields' ), 10, 3 );
 	}
-	
-	
+
 	/*
 	*  create_options()
 	*
@@ -64,18 +66,18 @@ class acf_field_google_font_selector extends acf_field {
 	*
 	*  @param	$field	- an array holding all the field's data
 	*/
-	
+
 	function create_options( $field )
 	{
 		// defaults?
 		/*
 		$field = array_merge($this->defaults, $field);
 		*/
-		
+
 		// key is needed in the field names to correctly save the data
 		$key = $field['name'];
-		
-		
+
+
 		// Create Field Options HTML
 		?>
 <tr class="field_option field_option_<?php echo $this->name; ?>">
@@ -84,7 +86,7 @@ class acf_field_google_font_selector extends acf_field {
 	</td>
 	<td>
 		<?php
-		
+
 		do_action('acf/create_field', array(
 			'type'		=>	'true_false',
 			'name'		=>	'fields['.$key.'][include_web_safe_fonts]',
@@ -92,7 +94,7 @@ class acf_field_google_font_selector extends acf_field {
 			'layout'	=>	'horizontal',
 			'message'    	=> __('Include web safe fonts?','acf-google_font_selector'),
 		));
-		
+
 		?>
 	</td>
 </tr>
@@ -137,8 +139,8 @@ class acf_field_google_font_selector extends acf_field {
 		<?php
 
 	}
-	
-	
+
+
 	/*
 	*  create_field()
 	*
@@ -150,17 +152,17 @@ class acf_field_google_font_selector extends acf_field {
 	*  @since	3.6
 	*  @date	23/01/13
 	*/
-	
+
 	function create_field( $field )
 	{
 		// defaults?
 		/*
 		$field = array_merge($this->defaults, $field);
 		*/
-		
+
 		// perhaps use $field['preview_size'] to alter the markup?
-		
-		
+
+
 		// create Field HTML
 		$current_font_family = ( empty( $field['value'] ) ) ? $field['default_font'] : $field['value']['font'];
 
@@ -212,8 +214,8 @@ class acf_field_google_font_selector extends acf_field {
 
 	<?php
 	}
-	
-	
+
+
 	/*
 	*  input_admin_enqueue_scripts()
 	*
@@ -229,26 +231,26 @@ class acf_field_google_font_selector extends acf_field {
 	function input_admin_enqueue_scripts()
 	{
 		// Note: This function can be removed if not used
-		
-		
+
+
 		// register ACF scripts
 		wp_register_script( 'acf-input-google_font_selector', $this->settings['dir'] . 'js/input.js', array('acf-input'), $this->settings['version'] );
-		wp_register_style( 'acf-input-google_font_selector', $this->settings['dir'] . 'css/input.css', array('acf-input'), $this->settings['version'] ); 
-		
-		
+		wp_register_style( 'acf-input-google_font_selector', $this->settings['dir'] . 'css/input.css', array('acf-input'), $this->settings['version'] );
+
+
 		// scripts
 		wp_enqueue_script(array(
-			'acf-input-google_font_selector',	
+			'acf-input-google_font_selector',
 		));
 
 		// styles
 		wp_enqueue_style(array(
-			'acf-input-google_font_selector',	
+			'acf-input-google_font_selector',
 		));
-		
-		
+
+
 	}
-	
+
 
 	/*
 	*  update_value()
@@ -265,7 +267,7 @@ class acf_field_google_font_selector extends acf_field {
 	*
 	*  @return	$value - the modified value
 	*/
-	
+
 	function update_value( $value, $post_id, $field )
 	{
 		$new_value = array();
@@ -384,6 +386,7 @@ class acf_field_google_font_selector extends acf_field {
 	*/
 	function google_font_enqueue(){
 		$enqueues = get_option( $this->enqueue_fonts_option );
+		echo "<pre>"; print_r( $enqueues ); echo "</pre>";
 		$fonts = array();
 		foreach( $enqueues as $enqueue ) {
 			$font = get_field( $enqueue, 'options' );
@@ -392,7 +395,15 @@ class acf_field_google_font_selector extends acf_field {
 				$font = get_field( $enqueue, $post->ID );
 			}
 
-			$fonts[] = $font;
+			if( array_key_exists( $font['font'], $fonts ) ) {
+				$font = array(
+					'font' => $font['font'],
+					'variants' => array_unique( array_merge( $fonts[$font['font']]['variants'], $font['variants'] ) ),
+					'subsets' => array_unique( array_merge( $fonts[$font['font']]['subsets'], $font['subsets'] ) ),
+				);
+			}
+
+			$fonts[$font['font']] = $font;
 		}
 
 		$fonts = array_filter( $fonts );
@@ -425,6 +436,52 @@ class acf_field_google_font_selector extends acf_field {
 
 
 	}
+
+
+	function validate_fields( $value ) {
+		if( !empty( $value ) ) {
+			foreach( $value as $i => $field ) {
+				$option = get_field_object( $field, 'option' );
+				$postoption = get_field_object( $field );
+				if( empty( $option['key'] ) && empty( $postoption['key'] ) ) {
+					unset( $value[$i] );
+				}
+			}
+		}
+		return $value;
+	}
+
+
+	function sync_fields( $new_status, $old_status, $post ) {
+		if( 'publish' != $new_status ) {
+			$to_remove = array();
+			$fields = get_field_objects( $post->ID );
+			if( !empty( $fields ) ) {
+				foreach( $fields as $field ) {
+					$to_remove[] = $field['key'];
+				}
+			}
+			$enqueues = get_option( $this->enqueue_fonts_option );
+			$enqueues = array_diff( $enqueues, $to_remove );
+			update_option( $this->enqueue_fonts_option, $enqueues );
+		}
+
+		if( 'publish' == $new_status ) {
+			$to_add = array();
+			$fields = get_field_objects( $post->ID );
+			if( !empty( $fields ) ) {
+				foreach( $fields as $field ) {
+					if( $field['type'] == 'google_font_selector' ) {
+						$to_add[] = $field['key'];
+					}
+				}
+			}
+			$enqueues = get_option( $this->enqueue_fonts_option );
+			$enqueues = array_merge( $enqueues, $to_add );
+			update_option( $this->enqueue_fonts_option, $enqueues );
+		}
+	}
+
 
 }
 

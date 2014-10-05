@@ -46,9 +46,10 @@ The `ACFGFS_REFRESH` constant can also be defined, it controls how frequently th
 
 == Changelog ==
 
-= 1.0 =
+= 2.1 =
 
-* Initial Release.
+* Font requests are now merged properly
+* Added field checks and syncing
 
 = 2.0 =
 
@@ -56,3 +57,7 @@ The `ACFGFS_REFRESH` constant can also be defined, it controls how frequently th
 * Font loading is now much better and selectable
 * Dropped ACF 3 support
 * Added ACF 5 support
+
+= 1.0 =
+
+* Initial Release.

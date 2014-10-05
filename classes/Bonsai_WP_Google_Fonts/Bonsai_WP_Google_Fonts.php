@@ -132,12 +132,18 @@ class Bonsai_WP_Google_Fonts {
 	}
 
 	function get_font_variant_array( $font ) {
-		$variants = $this->data['fonts'][$font]['variants'];
+		$variants = array();
+		if( !empty( $this->data['fonts'][$font]['variants'] ) ) {
+			$variants = $this->data['fonts'][$font]['variants'];
+		}
 		return $variants;
 	}
 
 	function get_font_subset_array( $font ) {
-		$subsets = $this->data['fonts'][$font]['subsets'];
+		$subsets = array();
+		if( !empty( $this->data['fonts'][$font]['subsets'] ) ) { 		
+			$subsets = $this->data['fonts'][$font]['subsets'];
+		}
 		return $subsets;
 	}
 
