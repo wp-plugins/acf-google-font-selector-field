@@ -4,7 +4,7 @@
 Plugin Name: Advanced Custom Fields: Google Font Selector
 Plugin URI: https://github.com/danielpataki/acf-google_font_selector
 Description: A field for Advanced Custom Fields which allows users to select Google fonts with advanced options
-Version: 2.1
+Version: 2.2
 Author: Daniel Pataki
 Author URI: http://danielpataki.com
 License: GPLv2 or later
@@ -17,6 +17,12 @@ load_plugin_textdomain( 'acf-google_font_selector', false, dirname( plugin_basen
 
 // Include Google Font Class
 include( 'classes/Bonsai_WP_Google_Fonts/Bonsai_WP_Google_Fonts.php' );
+
+/**
+ * Include Common Functions
+ */
+include_once('acf-google_font_selector-common.php');
+
 
 /**
  * Include Field Type For ACF5

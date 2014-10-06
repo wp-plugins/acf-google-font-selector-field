@@ -43,6 +43,10 @@ define( 'ACFGFS_REFRESH', 259200 );
 
 ### Changelog
 
+= 2.2 =
+* Much more efficient font enqueueing
+* Separated out common functions: ie: code is better :)
+
 = 2.1 =
 * Font requesrs are now merged properly
 * Added field checks and syncing

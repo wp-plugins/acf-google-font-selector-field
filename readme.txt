@@ -11,16 +11,11 @@ A field for Advanced Custom Fields which allows users to select Google fonts wit
 
 == Description ==
 
-**Please note that version 2.0 of the plugin is not compatible with the previous version. All Google Font fields will have to be set up again, sorry about that!**
+This plugin allows you to create a Google font selector field with different options. The plugin also creates the font request in the theme header. Font variants and charsets can be selected separately to make font loading more flexible and optimized.
 
-The plugin allows you to create a Google font selector field with different options. The plugin also created the font request in the theme header (unless disabled). Font variants and charsets can be selected separately to make font loading more flexible and optimized.
+Font options added to any options page will always be enqueues. Any fonts added to post pages will only be enqueued when that specific post is displayed.
 
-= Compatibility =
-
-This ACF field type is compatible with:
-
-* ACF 5
-* ACF 4
+This ACF field type is compatible with *ACF 4* and *ACF 5*.
 
 == Installation ==
 
@@ -43,6 +38,15 @@ Once installed the list of Google Fonts will be retrieved from a static file inc
 The `ACFGFS_REFRESH` constant can also be defined, it controls how frequently the plugin checks the Google API for updates. The value is in seconds, 86400 would be a day. The default is set to 3 days.
 
 `define( 'ACFGFS_REFRESH', 259200 );`
+
+If you would like to disable the automatic enqueueing of fonts you can use the `ACFGFS_NOENQUEUE` constant. The fonts are only enqueued automatically when this constant is not defined. Define the constant to disable enqueueing.
+
+`define( 'ACFGFS_NOENQUEUE', true );`
+
+== Screenshots ==
+
+1. ACF control for field creation
+2. The user-facing font settings
 
 == Changelog ==
 
