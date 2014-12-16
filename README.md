@@ -43,6 +43,9 @@ define( 'ACFGFS_REFRESH', 259200 );
 
 ### Changelog
 
+= 2.2.1 =
+* Updated for WordPress 4.1
+
 = 2.2 =
 * Much more efficient font enqueueing
 * Separated out common functions: ie: code is better :)

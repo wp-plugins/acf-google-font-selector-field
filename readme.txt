@@ -2,7 +2,7 @@
 Contributors: danielpataki
 Tags: acf, fonts, google
 Requires at least: 3.5
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -49,6 +49,13 @@ If you would like to disable the automatic enqueueing of fonts you can use the `
 2. The user-facing font settings
 
 == Changelog ==
+
+= 2.2.1 =
+* Updated for WordPress 4.1
+
+= 2.2 =
+* Much more efficient font enqueueing
+* Separated out common functions: ie: code is better :)
 
 = 2.1 =
 
