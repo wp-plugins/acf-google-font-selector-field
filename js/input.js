@@ -1,15 +1,15 @@
 (function($){
-	
-	
+
+
 	function initialize_field( $el ) {
-		
+
 		//$el.doStuff();
-		
+
 	}
-	
-	
+
+
 	if( typeof acf.add_action !== 'undefined' ) {
-	
+
 		/*
 		*  ready append (ACF5)
 		*
@@ -23,11 +23,11 @@
 		*  @param	$el (jQuery selection) the jQuery element which contains the ACF fields
 		*  @return	n/a
 		*/
-		
+
 		acf.add_action('ready append', function( $el ){
-			
+
 			acf.get_fields({ type : 'google_font_selector'}, $el).each(function(){
-				
+
 				initialize_field( $(this) );
 
                 jQuery(document).on( 'change', '.acfgfs-font-family select', function(){
@@ -53,22 +53,28 @@
                             container.find( '.acfgfs-loader').hide();
                             variants.html( response.variants );
                             subsets.html( response.subsets );
+
+							preview_text = jQuery('#acfgfs-preview div').html();
+							font = new_font.replace( ' ', '+' );
+							jQuery('#acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + new_font + '"></div>')
+							jQuery('#acfgfs-preview div').html(preview_text)
+
                         }
                     });
                 });
-				
+
 			});
-			
+
 		});
-		
-		
+
+
 	} else {
-		
-		
+
+
 		/*
 		*  acf/setup_fields (ACF4)
 		*
-		*  This event is triggered when ACF adds any new elements to the DOM. 
+		*  This event is triggered when ACF adds any new elements to the DOM.
 		*
 		*  @type	function
 		*  @since	1.0.0
@@ -79,11 +85,11 @@
 		*
 		*  @return	n/a
 		*/
-		
+
 		$(document).live('acf/setup_fields', function(e, postbox){
-			
+
 			$(postbox).find('.field[data-field_type="google_font_selector"]').each(function(){
-				
+
 				initialize_field( $(this) );
                 jQuery(document).on( 'change', '.acfgfs-font-family select', function(){
                     var new_font = $(this).val()
@@ -107,15 +113,19 @@
                             container.find( '.acfgfs-loader').hide();
                             variants.html( response.variants );
                             subsets.html( response.subsets );
+
+							font = new_font.replace( ' ', '+' );
+							jQuery('#acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + font + '">This is new a preview of the selected font</div>')
+
                         }
                     });
                 });
-				
+
 			});
-		
+
 		});
-	
-	
+
+
 	}
 
 

@@ -1,36 +1,39 @@
 <?php
+/**
+ * ACF 5 Field Class
+ *
+ * This file holds the class required for our field to work with ACF 5
+ *
+ * @author Daniel Pataki
+ * @since 3.0.0
+ *
+ */
 
 /**
- * Class acf_field_google_font_selector
+ * ACF 5 Role Selector Class
+ *
+* The Google Font selector class enables users to select webfonts from
+ * The Google Fonts service. This is the class that is used for ACF 5.
+ *
+ * @author Daniel Pataki
+ * @since 3.0.0
+ *
  */
 class acf_field_google_font_selector extends acf_field {
 
-	public $enqueue_fonts_option;
-	/*
-	*  __construct
-	*
-	*  This function will setup the field type data
-	*
-	*  @type	function
-	*  @date	5/03/2014
-	*  @since	5.0.0
-	*
-	*  @param	n/a
-	*  @return	n/a
-	*/
+	/**
+	 * Field Constructor
+	 *
+	 * Sets basic properties and runs the parent constructor
+	 *
+	 * @author Daniel Pataki
+	 * @since 3.0.0
+	 *
+	 */
 	function __construct() {
-		$api_key = ( defined( 'ACFGFS_API_KEY' ) ) ? ACFGFS_API_KEY : null;
-		$refresh = ( defined( 'ACFGFS_REFRESH' ) ) ? ACFGFS_REFRESH : 259200;
-		$option_name = ( defined( 'ACFGFS_OPTION_NAME' ) ) ? ACFGFS_OPTION_NAME : 'bonsai_wp_google_fonts';
-
-		$this->bonsai_WP_Google_Fonts = new Bonsai_WP_Google_Fonts( $api_key, $refresh, $option_name );
-		$this->common = new acf_google_font_selector_common(array(
-			'bonsai_WP_Google_Fonts' => $this->bonsai_WP_Google_Fonts
-		));
-
 		$this->name = 'google_font_selector';
-		$this->label = __('Google Font Selector', 'acf-google_font_selector');
-		$this->category = 'Choice';
+		$this->label = __( 'Google Font Selector', 'acf-google-font-selector-field');
+		$this->category = __( 'Choice' , 'acf' );
 
 		$this->defaults = array(
 			'include_web_safe_fonts' => true,
@@ -40,178 +43,169 @@ class acf_field_google_font_selector extends acf_field {
 
     	parent::__construct();
 
-		add_action( 'wp_ajax_acfgfs_get_font_details', array( $this->common, 'action_get_font_details' ) );
+		add_action( 'wp_ajax_acfgfs_get_font_details', 'acfgfs_action_get_font_details' );
+
 		if( !defined( 'ACFGFS_NOENQUEUE' ) ) {
-			add_action( 'wp_enqueue_scripts', array( $this->common, 'google_font_enqueue' ) );
+			add_action( 'wp_enqueue_scripts', 'acfgfs_google_font_enqueue' );
 		}
 
 	}
 
 
-	/*
-	*  render_field_settings()
-	*
-	*  Create extra settings for your field. These are visible when editing a field
-	*
-	*  @type	action
-	*  @since	3.6
-	*  @date	23/01/13
-	*
-	*  @param	$field (array) the $field being edited
-	*  @return	n/a
-	*/
+	/**
+	 * Field Options
+	 *
+	 * Creates the options for the field, they are shown when the user
+	 * creates a field in the back-end. Currently there are three fields.
+	 *
+	 * The Web Safe Fonts setting allows you to add regular fonts available
+	 * in any browser to the list
+	 *
+	 * The Enqueue Font setting will load the fonts on the appropriate page
+	 * when checked.
+	 *
+	 * The default font settings allows you to specify the font set as the
+	 * default for the field.
+	 *
+	 * @param array $field The details of this field
+	 * @author Daniel Pataki
+	 * @since 3.0.0
+	 *
+	 */
 	function render_field_settings( $field ) {
 
 
 		acf_render_field_setting( $field, array(
-			'label'			=> __('Web Safe Fonts?','acf-google_font_selector'),
-			'message'    	=> __('Include web safe fonts?','acf-google_font_selector'),
+			'label'			=> __('Web Safe Fonts?','acf-google-font-selector-field'),
+			'message'    	=> __('Include web safe fonts?','acf-google-font-selector-field'),
 			'type'			=> 'true_false',
 			'name'			=> 'include_web_safe_fonts',
 			'layout'		=> 'horizontal',
 		));
 
 		acf_render_field_setting( $field, array(
-			'label'			=> __('Enqueue Font?','acf-google_font_selector'),
-			'message'    	=> __('Automaticallty load font?','acf-google_font_selector'),
+			'label'			=> __('Enqueue Font?','acf-google-font-selector-field'),
+			'message'    	=> __('Automatically load font?','acf-google-font-selector-field'),
 			'type'			=> 'true_false',
 			'name'			=> 'enqueue_font',
 			'layout'		=> 'horizontal',
 		));
 
 		acf_render_field_setting( $field, array(
-			'label'			=> __('Default Font','acf-google_font_selector'),
+			'label'			=> __('Default Font','acf-google-font-selector-field'),
 			'type'			=> 'select',
 			'name'			=> 'default_font',
-			'choices'       => $this->bonsai_WP_Google_Fonts->get_font_dropdown_array()
+			'choices'       => acfgfs_get_font_dropdown_array()
 		));
 
 
 	}
 
 
-	/*
-	*  render_field()
-	*
-	*  Create the HTML interface for your field
-	*
-	*  @param	$field (array) the $field being rendered
-	*
-	*  @type	action
-	*  @since	3.6
-	*  @date	23/01/13
-	*
-	*  @param	$field (array) the $field being edited
-	*  @return	n/a
-	*/
+	/**
+	 * Field Display
+	 *
+	 * This function takes care of displaying our field to the users, taking
+	 * the field options into account.
+	 *
+	 * @param array $field The details of this field
+	 * @author Daniel Pataki
+	 * @since 3.0.0
+	 *
+	 */
 	function render_field( $field ) {
-		/*
-		*  Create a simple text input using the 'font_size' setting.
-		*/
+
 		$current_font_family = ( empty( $field['value'] ) ) ? $field['default_font'] : $field['value']['font'];
-
-
 		?>
 		<div class="acfgfs-font-selector">
 			<div class="acfgfs-loader"></div>
 			<div class="acfgfs-form-control acfgfs-font-family">
-			<div class="acfgfs-form-control-title"><?php _e('Font Family', 'acf-google_font_selector') ?></div>
+				<div class="acfgfs-form-control-title"><?php _e('Font Family', 'acf-google-font-selector-field') ?></div>
 
 				<select name="<?php echo esc_attr($field['name']) ?>">
 					<?php
-						$options = $this->bonsai_WP_Google_Fonts->get_font_dropdown_array();
-						foreach( $options as $option ) {
-							echo '<option ' . selected( $option, $current_font_family ) . ' value="' . $option . '">' . $option . '</option>';
-						}
+					$options = acfgfs_get_font_dropdown_array( $field );
+					foreach( $options as $option ) {
+						echo '<option ' . selected( $option, $current_font_family ) . ' value="' . $option . '">' . $option . '</option>';
+					}
 					?>
 				</select>
-		</div>
 
-		<div class="acfgfs-form-control acfgfs-font-variants">
-				<div class="acfgfs-form-control-title"><?php _e('Variants', 'acf-google_font_selector') ?></div>
-				<div class="acfgfs-list">
-				<?php
-					$font_variants = $this->bonsai_WP_Google_Fonts->get_font_variant_array( $current_font_family );
-				$this->common->display_variant_list( $font_variants, $field );
-				?>
+				<?php $font = str_replace( ' ', '+', $current_font_family ); ?>
+				<div id='acfgfs-preview'>
+					<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=<?php echo $font ?>">
+
+					<div style='font-family:<?php echo $font ?>'>
+						<?php _e( 'This is a preview of the selected font', 'acf-google-font-selector-field' ) ?>
+					</div>
 				</div>
-
-		</div>
-
-		<div class="acfgfs-form-control acfgfs-font-subsets">
-			<div class="acfgfs-form-control-title"><?php _e('Subsets', 'acf-google_font_selector') ?></div>
-			<div class="acfgfs-list">
-
-			<?php
-			$font_subsets = $this->bonsai_WP_Google_Fonts->get_font_subset_array( $current_font_family );
-			$this->common->display_subset_list( $font_subsets, $field );
-			?>
 
 			</div>
 
-		</div>
+			<div class="acfgfs-form-control acfgfs-font-variants">
+				<div class="acfgfs-form-control-title"><?php _e('Variants', 'acf-google-font-selector-field') ?></div>
+				<div class="acfgfs-list">
+					<?php acfgfs_display_variant_list( $field ) ?>
+				</div>
+
+			</div>
+
+			<div class="acfgfs-form-control acfgfs-font-subsets">
+				<div class="acfgfs-form-control-title"><?php _e('Subsets', 'acf-google-font-selector-field') ?></div>
+				<div class="acfgfs-list">
+					<?php acfgfs_display_subset_list( $field ) ?>
+				</div>
+
+			</div>
 
 			<textarea name="acfgfs-font-data" class="acfgfs-font-data"><?php echo json_encode( $field ) ?></textarea>
 
 		</div>
 
-
 		<?php
 	}
 
-	/*
-	*  input_admin_enqueue_scripts()
-	*
-	*  This action is called in the admin_enqueue_scripts action on the edit screen where your field is created.
-	*  Use this action to add CSS + JavaScript to assist your render_field() action.
-	*
-	*  @type	action (admin_enqueue_scripts)
-	*  @since	3.6
-	*  @date	23/01/13
-	*
-	*  @param	n/a
-	*  @return	n/a
-	*/
+	/**
+	 * Enqueue Assets
+	 *
+	 * This function enqueues the scripts and styles needed to display the
+	 * field
+	 *
+	 * @author Daniel Pataki
+	 * @since 3.0.0
+	 *
+	 */
 	function input_admin_enqueue_scripts() {
 
 		$dir = plugin_dir_url( __FILE__ );
 
-		// register & include JS
-		wp_register_script( 'acf-input-google_font_selector', "{$dir}js/input.js" );
-		wp_enqueue_script('acf-input-google_font_selector');
-
-
-		// register & include CSS
-		wp_register_style( 'acf-input-google_font_selector', "{$dir}css/input.css" );
-		wp_enqueue_style('acf-input-google_font_selector');
-
+		wp_enqueue_script( 'acf-input-google_font_selector', "{$dir}js/input.js" );
+		wp_enqueue_style( 'acf-input-google_font_selector', "{$dir}css/input.css" );
 
 	}
 
-	/*
-	*  update_value()
-	*
-	*  This filter is applied to the $value before it is saved in the db
-	*
-	*  @type	filter
-	*  @since	3.6
-	*  @date	23/01/13
-	*
-	*  @param	$value (mixed) the value found in the database
-	*  @param	$post_id (mixed) the $post_id from which the value was loaded
-	*  @param	$field (array) the field array holding all the field options
-	*  @return	$value
-	*/
+	/**
+	 * Pre-Save Value Modification
+	 *
+	 * This filter is applied to the $value before it is updated in the db
+	 *
+	 * @param mixed $value The value which will be saved in the database
+	 * @param int $post_id The $post_id of which the value will be saved
+	 * @param array $field The field array holding all the field options
+	 * @return mixed The new value
+	 * @author Daniel Pataki
+	 * @since 3.0.0
+	 *
+	 */
 	function update_value( $value, $post_id, $field ) {
 		$new_value = array();
 		$new_value['font'] = $value;
-
 		if( empty( $_POST[$field['key'] . '_variants'] ) ) {
-			$_POST[$field['key'] . '_variants'] = $this->bonsai_WP_Google_Fonts->get_font_variant_array( $new_value['font'] );
+			$_POST[$field['key'] . '_variants'] = acfgfs_get_font_variant_array( $new_value['font'] );
 		}
 
 		if( empty( $_POST[$field['key'] . '_subsets'] ) ) {
-			$_POST[$field['key'] . '_subsets'] = $this->bonsai_WP_Google_Fonts->get_font_subset_array( $new_value['font'] );
+			$_POST[$field['key'] . '_subsets'] = acfgfs_get_font_subset_array( $new_value['font'] );
 		}
 
 		$new_value['variants'] = $_POST[$field['key'] . '_variants'];

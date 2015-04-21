@@ -41,3 +41,10 @@
     z-index:5000;
     display:none;
 }
+
+#acfgfs-preview {
+    font-size:16px;
+    margin-top:11px;
+    background: #fafafa;
+    padding:11px;
+}
