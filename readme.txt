@@ -52,7 +52,6 @@ There are a few more advanced controls you can set to make the plugin do your bi
 
 `define( 'ACFGFS_API_KEY', 'your_google_api_key' );`
 
-
 The `ACFGFS_REFRESH` constant can controls how frequently the plugin checks the Google API for updates. The value is in seconds, 86400 would be a day. The default is set to 7 days.
 
 `define( 'ACFGFS_REFRESH', 259200 );`
@@ -69,6 +68,19 @@ If you want to modify the fonts that are loaded on a page you can use the `acfgf
     'subsets' => array( 'latin' )
 )`
 
+New in 3.0.1 is the ability to control the fonts displayed in the dropdown. If you only want to give your users access to a smaller portion of Google fonts you can use the `acfgfs/font_dropdown_array` filter to modify the array that is used to generate the dropdown. Please return an array where the key and the value are both the names of the font.
+
+`add_filter( 'acfgfs/font_dropdown_array', 'my_font_list' )
+function my_font_list( $fonts ) {
+    $fonts = array(
+        'Raleway' => 'Raleway',
+        'Lato' => 'Lato'
+    );
+    return $fonts;
+}
+`
+
+
 == Screenshots ==
 
 1. ACF control for field creation
@@ -76,7 +88,12 @@ If you want to modify the fonts that are loaded on a page you can use the `acfgf
 
 == Changelog ==
 
-= 3.0.0 =
+= 3.0.1 (2015-04-26) =
+* Added acfgfs/font_dropdown_array filter
+* Fixed a faulty font preview mechanism when multiple font options are added
+* Fixed an error when web safe fonts were selected
+
+= 3.0.0 (2015-04-21) =
 * Updated for WordPress 4.2
 * Font previews in the backend
 * Added Hungarian translation

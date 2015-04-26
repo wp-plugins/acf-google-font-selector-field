@@ -115,6 +115,8 @@ function acfgfs_get_font_dropdown_array( $field = null ) {
 
     asort( $font_array );
 
+    $font_array = apply_filters( 'acfgfs/font_dropdown_array', $font_array );
+
     return $font_array;
 }
 
@@ -289,7 +291,7 @@ function acfgfs_display_variant_list( $field, $new_font = null ) {
     }
 
     $font = acfgfs_get_font( $font );
-
+    $font['variants'] = (empty( $font['variants'] )) ? array() : $font['variants'];
     $i = 1;
     foreach( $font['variants'] as $variant ) :
         if( empty( $new_font ) ) {
@@ -334,6 +336,7 @@ function acfgfs_display_subset_list( $field, $new_font = null ) {
     }
 
     $font = acfgfs_get_font( $font );
+    $font['subsets'] = (empty( $font['subsets'] )) ? array() : $font['subsets'];
     $i = 1;
     foreach( $font['subsets'] as $subset ) :
         if( empty( $new_font ) ) {

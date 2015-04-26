@@ -181,7 +181,7 @@ class acf_field_google_font_selector extends acf_field {
 				</select>
 
 				<?php $font = str_replace( ' ', '+', $current_font_family ); ?>
-				<div id='acfgfs-preview'>
+				<div class='acfgfs-preview'>
 					<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=<?php echo $font ?>">
 
 					<div style='font-family:<?php echo $current_font_family ?>'>

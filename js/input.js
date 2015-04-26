@@ -56,7 +56,7 @@
 
 							preview_text = jQuery('#acfgfs-preview div').html();
 							font = new_font.replace( ' ', '+' );
-							jQuery('#acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + new_font + '"></div>')
+							container.find('.acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + new_font + '"></div>')
 							jQuery('#acfgfs-preview div').html(preview_text)
 
                         }
@@ -115,7 +115,7 @@
                             subsets.html( response.subsets );
 
 							font = new_font.replace( ' ', '+' );
-							jQuery('#acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + font + '">This is new a preview of the selected font</div>')
+							container.find('.acfgfs-preview').html('<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=' + font + '"><div style="font-family:' + font + '">This is new a preview of the selected font</div>')
 
                         }
                     });
