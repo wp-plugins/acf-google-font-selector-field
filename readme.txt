@@ -70,7 +70,7 @@ If you want to modify the fonts that are loaded on a page you can use the `acfgf
 
 New in 3.0.1 is the ability to control the fonts displayed in the dropdown. If you only want to give your users access to a smaller portion of Google fonts you can use the `acfgfs/font_dropdown_array` filter to modify the array that is used to generate the dropdown. Please return an array where the key and the value are both the names of the font.
 
-`add_filter( 'acfgfs/font_dropdown_array', 'my_font_list' )
+`add_filter( 'acfgfs/font_dropdown_array', 'my_font_list' );
 function my_font_list( $fonts ) {
     $fonts = array(
         'Raleway' => 'Raleway',
