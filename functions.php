@@ -12,47 +12,59 @@
  */
 
 
- /**
-  * Get Fonts To Enqueue
-  *
-  * Retrieves the fonts to enqueue on the current page
-  *
-  * @return array The array of fonts to enqueue
-  * @author Daniel Pataki
-  * @since 3.0.0
-  *
-  */
- function acfgfs_get_fonts_to_enqueue() {
-     if( is_singular() ) {
-         global $post;
-         $post_fields = get_field_objects( $post->ID );
-     }
-     $post_fields = ( empty( $post_fields ) ) ? array() : $post_fields;
-     $option_fields = get_field_objects( 'options' );
-     $option_fields = ( empty( $option_fields ) ) ? array() : $option_fields;
-     $fields = array_merge( $post_fields, $option_fields );
-     $font_fields = array();
-     foreach( $fields as $field ) {
-         if( !empty( $field['type'] ) && 'google_font_selector' == $field['type'] && !empty( $field['value'] ) ) {
-             $font_fields[] = $field['value'];
-         }
-     }
+/**
+ * Get Fonts To Enqueue
+ *
+ * Retrieves the fonts to enqueue on the current page
+ *
+ * @return array The array of fonts to enqueue
+ * @author Daniel Pataki
+ * @since 3.0.0
+ *
+ */
+function acfgfs_get_fonts_to_enqueue() {
+    if( is_singular() ) {
+        global $post;
+        $post_fields = get_field_objects( $post->ID );
+    }
+    $post_fields = ( empty( $post_fields ) ) ? array() : $post_fields;
+    $option_fields = get_field_objects( 'options' );
+    $option_fields = ( empty( $option_fields ) ) ? array() : $option_fields;
+    $fields = array_merge( $post_fields, $option_fields );
+    $font_fields = array();
+    foreach( $fields as $field ) {
+        if( !empty( $field['type'] ) && 'google_font_selector' == $field['type'] && !empty( $field['value'] ) ) {
 
-     $font_fields = apply_filters( 'acfgfs/enqueued_fonts', $font_fields );
+            // do not enqueue if is not supposed to be enqueued
+            if( $field['enqueue_font'] == false ) {
+                continue;
+            }
 
-     return $font_fields;
- }
+            // we do not need to enqueue web safe fonts
+            $web_safe_fonts = acfgfs_get_web_safe_fonts();
+            $value = $field['value'];
 
- /**
-  * Enqueue Fonts
-  *
-  * Retrieves the fonts to enqueue on the current page
-  *
-  * @uses acfgfs_get_fonts_to_enqueue()
-  * @author Daniel Pataki
-  * @since 3.0.0
-  *
-  */
+            if( ! in_array($value['font'], $web_safe_fonts) ) {
+                $font_fields[] = $value;
+            }
+        }
+    }
+
+    $font_fields = apply_filters( 'acfgfs/enqueued_fonts', $font_fields );
+
+    return $font_fields;
+}
+
+/**
+ * Enqueue Fonts
+ *
+ * Retrieves the fonts to enqueue on the current page
+ *
+ * @uses acfgfs_get_fonts_to_enqueue()
+ * @author Daniel Pataki
+ * @since 3.0.0
+ *
+ */
 function acfgfs_google_font_enqueue(){
     $fonts = acfgfs_get_fonts_to_enqueue();
     if( empty( $fonts ) ) {
@@ -61,17 +73,27 @@ function acfgfs_google_font_enqueue(){
     $subsets = array();
     $font_element = array();
     foreach( $fonts as $font ) {
-        $subsets = array_merge( $subsets, $font['subsets'] );
+
+        if( ! empty($font['subsets']) ) {
+            $subsets = array_merge( $subsets, $font['subsets'] );
+        }
+
         $font_name = str_replace( ' ', '+', $font['font'] );
-        if( $font['variants'] == array( 'regular' ) ) {
+        if( ! empty($font['variants']) && $font['variants'] == array( 'regular' ) ) {
             $font_element[] = $font_name;
         }
         else {
-            $regular_variant = array_search( 'regular', $font['variants'] );
-            if( $regular_variant !== false ) {
+            if( ! empty($font['variants']) ) {
+                $regular_variant = array_search( 'regular', $font['variants'] );
+            }
+            if( ! empty($regular_variant) && $regular_variant !== false ) {
                 $font['variants'][$regular_variant] = '400';
             }
-            $font_element[] = $font_name . ':' . implode( ',', $font['variants'] );
+            if( ! empty($font['variants']) ) {
+                $font_element[] = $font_name . ':' . implode( ',', $font['variants'] );
+            } else {
+                $font_element[] = $font_name;
+            }
         }
     }
     $subsets = ( empty( $subsets ) ) ? array('latin') : array_unique( $subsets );
